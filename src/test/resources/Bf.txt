@@ -1,0 +1,9 @@
+P P P P P P P P P P O 
+G P P P P P P P G P P P P 
+P P P P P P G P P P G P L 
+L L L M C G P P PT G P PT 
+P P P P P P P PT PT P P P 
+PT G P P PT L L P P P P P P 
+P P P P P P P P P PT G PT P 
+P P PT M M M M M M PT M M M M M M M M 
+PT G P PT G PT 

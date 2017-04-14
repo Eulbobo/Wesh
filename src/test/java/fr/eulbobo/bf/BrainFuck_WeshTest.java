@@ -1,4 +1,4 @@
-package fr.eulbobo.wesh;
+package fr.eulbobo.bf;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,16 +8,18 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-public class WeshTest {
+import fr.eulbobo.bf.wesh.WeshCommands;
+
+public class BrainFuck_WeshTest {
 
     @Test
     public void should_say_hello_world_when_reading_test_file() throws Exception{
-        URL url = WeshTest.class.getClassLoader().getResource("HelloWorld.txt");
+        URL url = BrainFuck_WeshTest.class.getClassLoader().getResource("Wesh.txt");
         File input = Paths.get(url.toURI()).toFile();
         StringBuilder sb = new StringBuilder();
 
 
-        Wesh wesh = new Wesh(input, sb::append);
+        BrainFuck wesh = new BrainFuck(input, sb::append, WeshCommands::bfFromValue);
         wesh.execute();
 
         assertEquals("On devrait lire HelloWorld!", "Hello World!\n", sb.toString());

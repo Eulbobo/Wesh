@@ -1,4 +1,4 @@
-package fr.eulbobo.wesh;
+package fr.eulbobo.bf;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,21 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-/**
- * Extended Interpreter for the Wesh BrainFuck programming language
- *
- * @author david moss
- * @author eulbobo
- * @created 02 January 2002
- */
-public class Wesh {
+import fr.eulbobo.bf.support.BF;
+
+public class BrainFuck {
 
     private final byte[] memory = new byte[30000];
     private int pointer = 0;
     private int[] ins, outs;
 
-    private final List<WeshCommands> commands = new ArrayList<>();
+    private final List<BF> commands = new ArrayList<>();
     private final Consumer<Character> output;
 
     /**
@@ -30,27 +26,12 @@ public class Wesh {
      * @param codex a wesh code file
      * @exception Exception Description of Exception
      */
-    public Wesh(final File codex, final Consumer<Character> output) throws Exception {
-        open(codex);
+    public BrainFuck(final File codex, final Consumer<Character> output, final Function<String, BF> stringToBf) throws Exception {
+        open(codex, stringToBf);
         this.output = output;
 
         if (!test()) {
-            throw new Exception("Unbalanced Wesh code.");
-        }
-    }
-
-    /**
-     * Just for testing.
-     *
-     * @param args nothing
-     */
-    public static void main(final String[] args) throws Exception {
-        if (args.length > 0) {
-            Wesh wesh = new Wesh(new File(args[0]), System.out::print);
-            wesh.execute();
-        } else {
-            System.out.println("You must enter a file name in the commandline to execute it");
-            System.exit(1);
+            throw new Exception("Unbalanced code.");
         }
     }
 
@@ -91,10 +72,10 @@ public class Wesh {
     /**
      * @param f the file
      */
-    private void open(final File f) throws IOException {
+    private void open(final File f, final Function<String, BF> cmdToBf) throws IOException {
         try (Scanner scn = new Scanner(f)) {
             while (scn.hasNext()) {
-                WeshCommands cmd = WeshCommands.valueOf(scn.next());
+                BF cmd = cmdToBf.apply(scn.next());
                 if (cmd != null) {
                     commands.add(cmd);
                 }
@@ -115,13 +96,13 @@ public class Wesh {
 
         for (int i = 0; i < commands.size(); i++) {
             switch (commands.get(i)) {
-            case ZIVA: {
+            case O: {
                 x++;
                 inb++;
                 break;
             }
 
-            case WOULAH: {
+            case C: {
                 outb++;
                 break;
             }
@@ -144,13 +125,13 @@ public class Wesh {
         for (int i = 0; i < commands.size(); i++) {
             switch (commands.get(i)) {
 
-            case ZIVA: {
+            case O: {
                 ins[inAt++] = i;
                 outAt = inAt;
                 break;
             }
 
-            case WOULAH: {
+            case C: {
                 for (int o = outAt; o >= 0; o--) {
                     if (outs[o - 1] == 0) {
                         outs[o - 1] = i;
@@ -175,27 +156,27 @@ public class Wesh {
         for (int i = 0; i < commands.size(); i++) {
             switch (commands.get(i)) {
 
-            case WESH: {
+            case P: {
                 memory[pointer]++;
                 break;
             }
 
-            case YO: {
+            case M: {
                 memory[pointer]--;
                 break;
             }
 
-            case HEY: {
+            case G: {
                 pointer = pointer == 29999 ? 0 : pointer + 1;
                 break;
             }
 
-            case GROS: {
+            case L: {
                 pointer = pointer == 0 ? 29999 : pointer - 1;
                 break;
             }
 
-            case ZIVA: {
+            case O: {
                 if (memory[pointer] == 0) {
                     i = getEndLoop(i);
 
@@ -207,7 +188,7 @@ public class Wesh {
                 break;
             }
 
-            case WOULAH: {
+            case C: {
                 i = getStartLoop(i) - 1;
 
                 if (i == -1) {
@@ -217,12 +198,12 @@ public class Wesh {
                 break;
             }
 
-            case COUSIN: {
+            case PT: {
                 output.accept((char) memory[pointer]);
                 break;
             }
 
-            case POTO: {
+            case CM: {
                 try {
                     memory[pointer] = (byte) System.in.read();
 
